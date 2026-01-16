@@ -1,0 +1,30 @@
+---
+title: "Untitled"
+format: html
+---
+
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+
+```{r}
+df <- read_csv("data/dados-limpo.csv") 
+```
+
+
+```{r}
+df_analise <- df |> 
+    filter(nivel_atencao %in% c("atenção primária", "atenção secundária", "atenção terciária"),
+    codigo_municipio %in% c(230050, 230310, 230365, 230400, 230435, 230450, 230465, 230490, 230520, 230580, 230610, 230800, 230820, 230880, 230900, 230990, 231095, 231170, 231200, 231220, 231280, 231390, 231395)) |>
+    select(nome, nome_do_municipio, codigo_municipio, populacao_muni, estabelecimento , nivel_atencao, codigo_estabelecimento_saude, codigo_profissional_saude, populacao_muni)
+```
+
+```{r}
+df_analise |> 
+    count(nivel_atencao)
+```
+
+O nível primário e secundário contaram com, respectivamente, 73 e 39 vínculos de psicólogos. A atenção terciária, por outro lado, conta apenas com 1 vínculo, o que sugere uma subnotificação desse dado. Os vínculos de psicólogos são mais prevalentas na atenção primária.
