@@ -1,0 +1,41 @@
+---
+title: "Untitled"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(rstatix)
+library(flextable)
+library(MKinfer)
+```
+
+
+```{r}
+# pressupostos
+## normalidade dos dados
+df_t |> 
+    group_by(nivel_atencao) |> 
+    shapiro_test(pop_vinculo) |> 
+    flextable() |> 
+    autofit() |> 
+    set_caption("Teste de Shapiro-Wilk para normalidade")
+    
+## homogeneidade de variâncias
+levene_test(df_t, pop_vinculo ~ nivel_atencao, center = "median") |> 
+    flextable() |> 
+    autofit() |> 
+    set_caption("Teste de Levene para homogeneidade de varâncias")
+```
+
+
+```{r}
+# teste t com bootstrapp
+t_test_robusto <- boot.t.test(pop_vinculo ~ nivel_atencao, df_t, R = 1000)
+```
+
+
+```{r}
+# efeito
+efeito <- cohens_d(data = df_t, formula = pop_vinculo ~ nivel_atencao, var.equal = T, hedges.correction = F)
+```

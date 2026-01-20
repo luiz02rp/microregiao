@@ -8,6 +8,7 @@ format: html
 library(tidyverse)
 library(janitor)
 library(rstatix)
+library(flextable)
 ```
 
 
@@ -17,36 +18,74 @@ df <- read_csv("data/dados-limpo.csv")
 
 
 ```{r}
-df_analise <- df |> 
+df_limpo <- df |> 
     filter(nivel_atencao %in% c("atenção primária", "atenção secundária", "atenção terciária"),
     codigo_municipio %in% c(230050, 230310, 230365, 230400, 230435, 230450, 230465, 230490, 230520, 230580, 230610, 230800, 230820, 230880, 230900, 230990, 231095, 231170, 231200, 231220, 231280, 231290, 231390, 231395)) |>
     select(nome, nome_do_municipio, codigo_municipio, populacao_muni, estabelecimento , nivel_atencao, codigo_estabelecimento_saude, codigo_profissional_saude, populacao_muni, cbo)
 ```
 
 ```{r}
-df_analise |> 
+df_analise <- df_limpo |> 
+    select(nome, nome_do_municipio, nivel_atencao, populacao_muni) |>  
+    group_by(nome_do_municipio, nivel_atencao, populacao_muni) |> 
+    summarise(total_vinculos = n(), .groups = "drop") |> 
+    mutate(pop_vinculo = populacao_muni / total_vinculos,
+    nivel_atencao = as_factor(nivel_atencao)) 
+```
+
+```{r}
+# tabela quantidade de psicólogos em cada município por nível assistencial
+df_tabela <- df_analise |>  
+    select(nome_do_municipio, nivel_atencao, total_vinculos) |> 
+    pivot_wider(names_from = nivel_atencao, 
+    values_from = total_vinculos,
+    values_fill = 0) |> 
+    clean_names() |> 
+    mutate(vinculos_municipio = rowSums(across(starts_with("atencao_")), na.rm = T),
+    porcentagem = vinculos_municipio / sum(vinculos_municipio))|> 
+    as_data_frame() 
+
+tabela <- df_tabela |> 
+    adorn_totals("row", name = "Total") |> 
+    flextable() |> 
+    autofit() |> 
+    colformat_double(j = "porcentagem", 
+    digits = 0, suffix = "%") |>
+    set_formatter(porcentagem = function(x) sprintf("%.0f%%", x * 100)) |> 
+    set_caption("Distribuição dos vínculos de psicólogos na região de saúde 11")
+
+tabela
+```
+
+```{r}
+# quantidade de psicólogos por nível de atenção
+df_limpo |> 
     count(nivel_atencao)
 ```
 
 O nível primário e secundário contaram com, respectivamente, 73 e 39 vínculos de psicólogos. A atenção terciária, por outro lado, conta apenas com 1 vínculo, o que sugere uma subnotificação desse dado. Os vínculos de psicólogos são mais prevalentas na atenção primária.
 
 ```{r}
-df_analise |> 
-    select(nome, nome_do_municipio, nivel_atencao, populacao_muni) |> 
-    filter(nivel_atencao %in% c("atenção primária", "atenção secundária")) |> 
-    group_by(nome_do_municipio, nivel_atencao, populacao_muni) |> 
-    summarise(total_vinculos = n(), .groups = "drop") |> 
-    mutate(pop_vinculo = total_vinculos / populacao_muni) 
+# banco para teste t
+df_t <- df_analise |> 
+    filter(nivel_atencao %in% c("atenção primária", "atenção secundária"))
 ```
 
 ```{r}
-# tranformas no formato largo
-```
+# banco para correlação
+## correlação população e quantidade de vínculos de psicólogos
+df_cor <- df_analise |> 
+    select(populacao_muni, total_vinculos)
 
-```{r}
-# realizar teste dos pressupostos
-```
+## correlação população e quantidade de vínculos de psicólogos na atenção primária
+df_cor_p <- df_analise |> 
+    filter(nivel_atencao == "atenção primária") |> 
+    select(populacao_muni, total_vinculos) 
+    
 
-```{r}
-# teste t
+## correlação população e quantidade de vínculos de psicólogos na atenção secundária
+df_cor_s <- df_analise |>
+    filter(nivel_atencao == "atenção secundária") |> 
+    select(populacao_muni, total_vinculos) 
+    
 ```
