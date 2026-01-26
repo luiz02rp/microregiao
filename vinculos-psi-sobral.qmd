@@ -11,11 +11,9 @@ library(rstatix)
 library(flextable)
 ```
 
-
 ```{r}
 df <- read_csv("data/dados-limpo.csv") 
 ```
-
 
 ```{r}
 df_limpo <- df |> 
@@ -32,6 +30,38 @@ df_analise <- df_limpo |>
     mutate(pop_vinculo = populacao_muni / total_vinculos,
     nivel_atencao = as_factor(nivel_atencao)) 
 ```
+
+
+```{r}
+# quantidade de psicólogos por nível de atenção
+df_limpo |> 
+  count(nivel_atencao)
+
+# quantidade de municípios
+df_limpo |> 
+  count(nome_do_municipio)
+
+# códigos de profissionais repetidos
+codigos_repetidos <- df_limpo |> 
+  group_by(codigo_profissional_saude) |> 
+  summarise(qde_vinculos = n()) |> 
+  filter(qde_vinculos > 1) |> 
+  arrange(desc(qde_vinculos)) |> 
+  pull(codigo_profissional_saude) 
+
+# detalhes dos profissionais repetidos
+profissionais_repetidos <- df_limpo |> 
+  filter(codigo_profissional_saude %in% c(codigos_repetidos)) |>  
+  select(nome, nome_do_municipio, nivel_atencao, codigo_profissional_saude) |> 
+  arrange(codigo_profissional_saude)
+
+profissionais_repetidos |> 
+  group_by(nivel_atencao) |> 
+  summarise(n = n())
+
+```
+
+Encontrou-se 171 vínculos de psicólogos nos 24 municípios da 11º região de saúde. O nível primário, secundário e terciário contaram com, respectivamente, 96, 63 e 12 vínculos de psicólogos. A quantidade de vínculos repetidos foram 44, dos quais 32, 11 e 1 pertenciam, repectivamente, ao nível primário, secundário e terciário. 
 
 ```{r}
 # tabela quantidade de psicólogos em cada município por nível assistencial
@@ -59,13 +89,7 @@ tabela <- df_tabela |>
 tabela
 ```
 
-```{r}
-# quantidade de psicólogos por nível de atenção
-df_limpo |> 
-    count(nivel_atencao)
-```
-
-O nível primário e secundário contaram com, respectivamente, 73 e 39 vínculos de psicólogos. A atenção terciária, por outro lado, conta apenas com 1 vínculo, o que sugere uma subnotificação desse dado. Os vínculos de psicólogos são mais prevalentas na atenção primária.
+Todos os municípios apresentaram psicólogos cadastrados, mas apenas Reriutaba e Sobral possuíam vínculos nos três níveis assistenciais, sendo este último o que contabilizou mais vínculos (34%) (Ver tabela X). 
 
 ```{r}
 # banco para teste t
