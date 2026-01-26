@@ -37,13 +37,15 @@ df_analise <- df_limpo |>
 # tabela quantidade de psicólogos em cada município por nível assistencial
 df_tabela <- df_analise |>  
     select(nome_do_municipio, nivel_atencao, total_vinculos) |> 
+    arrange(desc(total_vinculos)) |> 
     pivot_wider(names_from = nivel_atencao, 
     values_from = total_vinculos,
     values_fill = 0) |> 
     clean_names() |> 
     mutate(vinculos_municipio = rowSums(across(starts_with("atencao_")), na.rm = T),
     porcentagem = vinculos_municipio / sum(vinculos_municipio))|> 
-    as_data_frame() 
+    as_data_frame() |> 
+    relocate(atencao_primaria, .after = nome_do_municipio)
 
 tabela <- df_tabela |> 
     adorn_totals("row", name = "Total") |> 

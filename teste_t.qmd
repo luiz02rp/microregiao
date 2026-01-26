@@ -8,33 +8,48 @@ library(tidyverse)
 library(rstatix)
 library(flextable)
 library(MKinfer)
+library(gtsummary)
 ```
 
-
+# Estatística descritiva
 ```{r}
-# pressupostos
+tabela_descritiva <- df_t |> 
+  group_by(nivel_atencao) |> 
+  summarise(n = n(), media = mean(pop_vinculo, na.rm = T), desvio_padrao = sd(pop_vinculo, na.rm = T)) |> 
+  flextable() |> 
+  set_header_labels(nivel_atencao = "Nível assistencial", n = "Nº de municípios", media = "Média", desvio_padrao = "Desvio-Padrão") |> 
+  colformat_double(digits = 2, big.mark = ".", decimal.mark = ",") |> 
+  autofit() |> 
+  set_caption("Habitantes por Psicólogo por Nível de Atenção")
+```
+
+# Pressupostos
+```{r}
 ## normalidade dos dados
 df_t |> 
     group_by(nivel_atencao) |> 
     shapiro_test(pop_vinculo) |> 
     flextable() |> 
+    set_header_labels(nivel_atencao = "Nível assistencial", variable = "Variável", statistic = "Estatística", p = "p-valor") |> 
+    colformat_double(digits = 2, big.mark = ".", decimal.mark = ",") |> 
     autofit() |> 
     set_caption("Teste de Shapiro-Wilk para normalidade")
     
 ## homogeneidade de variâncias
 levene_test(df_t, pop_vinculo ~ nivel_atencao, center = "median") |> 
     flextable() |> 
+    colformat_double(digits = 2, big.mark = ".", decimal.mark = ",") |> 
     autofit() |> 
     set_caption("Teste de Levene para homogeneidade de varâncias")
 ```
 
-
+# Teste t com bootstrapp
 ```{r}
 # teste t com bootstrapp
 t_test_robusto <- boot.t.test(pop_vinculo ~ nivel_atencao, df_t, R = 1000)
 ```
 
-
+# Tamanho de efeito
 ```{r}
 # efeito
 efeito <- cohens_d(data = df_t, formula = pop_vinculo ~ nivel_atencao, var.equal = T, hedges.correction = F)
