@@ -8,6 +8,7 @@ library(rstatix)
 library(tidyverse)
 library(janitor)
 library(flextable)
+library(ggpubr)
 ```
 
 # Correlação entre população e quantidade de vínculos 
@@ -25,7 +26,7 @@ A normalidade dos dados não foi acatada pelo teste de Shapiro-Wilk para a vari�
 
 ## correlação de spearman
 ```{r}
-df_cor |> 
+correlacao <- df_cor |> 
   cor_test(vars = populacao_muni, vars2 = total_vinculos, alternative = "two.sided", method = "spearman")
 ```
 
@@ -61,3 +62,29 @@ df_cor_s |>
 # Resultados
 Os reusltados do teste de Shapiro-Wilk indicaram ausência de normalidade para as variáveis população municipal e total de vínculos de psicólogos em todas as situações analisadas. Além disso, o teste de correlação de Spearman mostrou que existe associação significativa, positiva e moderada entre o tamanho populacional e o número de vínculos de psicólogos (Rs = (22) = 0,57; p < 0,01) quando se observa a rede de modo agregado. Entretanto, esse relação não se sustenta quando os níveis de atenção são analisados do modo separado. A atenção primária apresentou uma correlação fraca e não significativa (Rs (22) = 0,28; p < 0,18), assim como a secundária (Rs (16) = 0,33; p < 0,18). 
 
+# Visualização
+
+
+```{r}
+# adicionar variável igual em todos os bancos
+df_geral <- df_cor |> 
+  mutate(categoria = "Rede Geral")
+
+df_primaria <- df_cor_p |> 
+  mutate(categoria = "Atenção primária")
+
+df_secundaria <- df_cor_s |> 
+  mutate(categoria = "Atenção secundária")
+
+# juntar banco de dados
+df_plot <- bind_rows(df_geral, df_primaria, df_secundaria)
+```
+
+```{r}
+df_plot |>
+  ggplot(aes(x = populacao_muni, y = total_vinculos))+
+  geom_point(color = "black", alpha = 0.7, size = 2)+
+  geom_smooth(method = "lm", color = "black", se = F)+
+  facet_wrap(~categoria, scales = "free")+
+  stat_cor(method = "spearman", label.sep = "\n", size = 3.5, color = "Black")
+```
