@@ -101,14 +101,16 @@ df_t <- df_analise |>
 # banco para correlação
 ## correlação população e quantidade de vínculos de psicólogos
 df_cor <- df_analise |> 
-    select(populacao_muni, total_vinculos)
+  select(nome_do_municipio, populacao_muni, total_vinculos) |> 
+  group_by(nome_do_municipio, populacao_muni) |> 
+  summarise(total_vinculos = sum(total_vinculos, na.rm = T), .groups = "drop")
+
 
 ## correlação população e quantidade de vínculos de psicólogos na atenção primária
 df_cor_p <- df_analise |> 
     filter(nivel_atencao == "atenção primária") |> 
     select(populacao_muni, total_vinculos) 
     
-
 ## correlação população e quantidade de vínculos de psicólogos na atenção secundária
 df_cor_s <- df_analise |>
     filter(nivel_atencao == "atenção secundária") |> 

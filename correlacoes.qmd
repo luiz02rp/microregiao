@@ -2,3 +2,62 @@
 title: "Untitled"
 format: html
 ---
+
+```{r}
+library(rstatix)
+library(tidyverse)
+library(janitor)
+library(flextable)
+```
+
+# Correlação entre população e quantidade de vínculos 
+
+## testanto pressuposto
+```{r}
+df_cor |> 
+  shapiro_test(populacao_muni)
+
+df_cor |> 
+  shapiro_test(total_vinculos)
+```
+
+A normalidade dos dados não foi acatada pelo teste de Shapiro-Wilk para a variável população (w=0,419; p < 0,001) nem para o total de vínculos no município (w=0,417; p < 0,001). 
+
+## correlação de spearman
+```{r}
+df_cor |> 
+  cor_test(vars = populacao_muni, vars2 = total_vinculos, alternative = "two.sided", method = "spearman")
+```
+
+Procedeu, assim, à realização do teste de correlação de Spearman, o qual indicou que há uma associação significativa e moderada (Rs (22) = 0,57; p < 0,01), o que sugere que a quantidade vínculos é maior onde há uma população mais numerosa. Entretanto, quando se analisou  apenas a quantidade de vínculos na atenção primária (Rs (22) = 0,28; p < 0,18) e secundária (Rs (16) = 0,33; p < 0,18) separadamente, observou-se que não existia associação significativa. 
+
+# Correlação entre população e quantidade de vínculos na primária
+## Testando pressupostos
+```{r}
+df_cor_p |> 
+  shapiro_test(populacao_muni, total_vinculos) 
+```
+
+## correlação de spearman
+```{r}
+df_cor_p |> 
+  cor_test(vars = populacao_muni, vars2 = total_vinculos, alternative = "two.sided", method = "spearman")
+```
+
+# Correlação entre população e quantidade de vínculos na secundária
+## testando pressupostos
+
+```{r}
+df_cor_s |> 
+  shapiro_test(populacao_muni, total_vinculos)
+```
+
+## correlação de spearman
+```{r}
+df_cor_s |> 
+  cor_test(vars = populacao_muni, vars2 = total_vinculos, alternative = "two.sided", method = "spearman")
+```
+
+# Resultados
+Os reusltados do teste de Shapiro-Wilk indicaram ausência de normalidade para as variáveis população municipal e total de vínculos de psicólogos em todas as situações analisadas. Além disso, o teste de correlação de Spearman mostrou que existe associação significativa, positiva e moderada entre o tamanho populacional e o número de vínculos de psicólogos (Rs = (22) = 0,57; p < 0,01) quando se observa a rede de modo agregado. Entretanto, esse relação não se sustenta quando os níveis de atenção são analisados do modo separado. A atenção primária apresentou uma correlação fraca e não significativa (Rs (22) = 0,28; p < 0,18), assim como a secundária (Rs (16) = 0,33; p < 0,18). 
+

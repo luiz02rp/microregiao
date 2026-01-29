@@ -49,6 +49,8 @@ levene_test(df_t, pop_vinculo ~ nivel_atencao, center = "median") |>
 t_test_robusto <- boot.t.test(pop_vinculo ~ nivel_atencao, df_t, R = 1000)
 ```
 
+Embora a atenção primária está presente em todo o território da microrregião, o que difere da atenção secundária, a qual se concentra em determinadas localidades. Entretanto, eles não apresentaram uma diferença estatisticamente significativa. 
+
 # Tamanho de efeito
 ```{r}
 # efeito
