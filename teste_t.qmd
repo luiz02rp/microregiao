@@ -58,5 +58,7 @@ efeito <- cohens_d(data = df_t, formula = pop_vinculo ~ nivel_atencao, var.equal
 ```
 
 # procedimento de análise de dados
+Foi realizado um teste t de Student para amostras independentes com o objetivo de investigar em que medida os níveis de saúde mental eram diferentes entre quem tinha e quem não tinha filhos. A normalidade dos dados foi avaliada por meio do teste Shapiro-Wilk. O pressuposto de homogeneidade de variância foi avaliado por meio do teste de Levene. Foram realizados procedimentos de bootstrapping (1000 re-amostragens; 95% IC) para se obter uma maior confiabilidade dos resultados, para corrigir desvios de normalidade da distribuição da amostra e diferenças entre os tamanhos dos grupos e, também, para apresentar um intervalo de confiança de 95% para as diferenças entre as médias (Haukoos & Lewis, 2005).
 
 # resultados
+Os resultados demonstraram que pessoas com filhos tiveram escore estatisticamente maior (*M* = 19,36; DP = 3,71) do que pessoas sem filhos (*M* = 18,27; *DP* = 3,96) (*t*(522) = 3,230, *p* = 0,002). Entretanto, o tamanho de efeito da diferença foi baixo (d de Cohen = 0,28).

@@ -117,3 +117,6 @@ df_cor_s <- df_analise |>
     select(populacao_muni, total_vinculos) 
     
 ```
+
+# Resultados
+Encontrou-se 171 vínculos de psicólogos nos 24 municípios da 11º região de saúde. O nível primário, secundário e terciário contaram com, respectivamente, 96, 63 e 12 vínculos de psicólogos. A quantidade de vínculos repetidos foram 44, dos quais 32, 11 e 1 pertenciam, repectivamente, ao nível primário, secundário e terciário. Todos os municípios apresentaram psicólogos cadastrados, mas apenas Reriutaba e Sobral possuíam vínculos nos três níveis assistenciais, sendo este último o que contabilizou mais vínculos (34%) (Ver tabela X). 

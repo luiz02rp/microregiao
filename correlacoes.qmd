@@ -60,7 +60,10 @@ df_cor_s |>
   cor_test(vars = populacao_muni, vars2 = total_vinculos, alternative = "two.sided", method = "spearman")
 ```
 
-# Resultados
+# Procedimento de análise de dados
+Foram realizadas correlações de Pearson entre as variáveis Crise Existencial, Felicidade, Sentido de Vida e Otimismo. A análise foi conduzida com o pacote psych (Revelle, 2024) no software R (R Core Team, 2023).
+
+# Resultados (esse foi eu quem fez)
 Os reusltados do teste de Shapiro-Wilk indicaram ausência de normalidade para as variáveis população municipal e total de vínculos de psicólogos em todas as situações analisadas. Além disso, o teste de correlação de Spearman mostrou que existe associação significativa, positiva e moderada entre o tamanho populacional e o número de vínculos de psicólogos (Rs = (22) = 0,57; p < 0,01) quando se observa a rede de modo agregado. Entretanto, esse relação não se sustenta quando os níveis de atenção são analisados do modo separado. A atenção primária apresentou uma correlação fraca e não significativa (Rs (22) = 0,28; p < 0,18), assim como a secundária (Rs (16) = 0,33; p < 0,18) (ver figura x). 
 
 # Visualização
