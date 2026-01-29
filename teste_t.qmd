@@ -56,3 +56,7 @@ Embora a atenção primária está presente em todo o território da microrregi�
 # efeito
 efeito <- cohens_d(data = df_t, formula = pop_vinculo ~ nivel_atencao, var.equal = T, hedges.correction = F)
 ```
+
+# procedimento de análise de dados
+
+# resultados

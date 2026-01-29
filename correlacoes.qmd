@@ -9,6 +9,7 @@ library(tidyverse)
 library(janitor)
 library(flextable)
 library(ggpubr)
+library(scales)
 ```
 
 # Correlação entre população e quantidade de vínculos 
@@ -60,15 +61,14 @@ df_cor_s |>
 ```
 
 # Resultados
-Os reusltados do teste de Shapiro-Wilk indicaram ausência de normalidade para as variáveis população municipal e total de vínculos de psicólogos em todas as situações analisadas. Além disso, o teste de correlação de Spearman mostrou que existe associação significativa, positiva e moderada entre o tamanho populacional e o número de vínculos de psicólogos (Rs = (22) = 0,57; p < 0,01) quando se observa a rede de modo agregado. Entretanto, esse relação não se sustenta quando os níveis de atenção são analisados do modo separado. A atenção primária apresentou uma correlação fraca e não significativa (Rs (22) = 0,28; p < 0,18), assim como a secundária (Rs (16) = 0,33; p < 0,18). 
+Os reusltados do teste de Shapiro-Wilk indicaram ausência de normalidade para as variáveis população municipal e total de vínculos de psicólogos em todas as situações analisadas. Além disso, o teste de correlação de Spearman mostrou que existe associação significativa, positiva e moderada entre o tamanho populacional e o número de vínculos de psicólogos (Rs = (22) = 0,57; p < 0,01) quando se observa a rede de modo agregado. Entretanto, esse relação não se sustenta quando os níveis de atenção são analisados do modo separado. A atenção primária apresentou uma correlação fraca e não significativa (Rs (22) = 0,28; p < 0,18), assim como a secundária (Rs (16) = 0,33; p < 0,18) (ver figura x). 
 
 # Visualização
-
 
 ```{r}
 # adicionar variável igual em todos os bancos
 df_geral <- df_cor |> 
-  mutate(categoria = "Rede Geral")
+  mutate(categoria = "Rede geral")
 
 df_primaria <- df_cor_p |> 
   mutate(categoria = "Atenção primária")
@@ -78,13 +78,30 @@ df_secundaria <- df_cor_s |>
 
 # juntar banco de dados
 df_plot <- bind_rows(df_geral, df_primaria, df_secundaria)
+
+df_plot <- df_plot |> 
+  mutate(categoria = factor(categoria, levels = c("Rede geral", "Atenção primária", "Atenção secundária")))
 ```
 
 ```{r}
-df_plot |>
-  ggplot(aes(x = populacao_muni, y = total_vinculos))+
-  geom_point(color = "black", alpha = 0.7, size = 2)+
-  geom_smooth(method = "lm", color = "black", se = F)+
-  facet_wrap(~categoria, scales = "free")+
-  stat_cor(method = "spearman", label.sep = "\n", size = 3.5, color = "Black")
+cor_plot <- df_plot |>
+  ggplot(aes(x = populacao_muni, y = total_vinculos)) +
+  geom_point(color = "black", alpha = 0.7, size = 2) +
+  geom_smooth(method = "lm", color = "black", se = F) +
+  facet_wrap(~categoria, scales = "fixed") +
+  scale_y_log10(breaks = c(1, 2, 5, 10, 20, 50)) +
+  scale_x_log10(breaks = c(5000, 10000, 25000, 50000, 100000, 250000))+
+  labs(
+    title = "Relação entre População e Vínculos de Psicólogos",
+    subtitle = "Região de Saúde 11 - Ceará",
+    x = "População do município",
+    y = "Número de vínculos"
+  ) +
+  theme_bw() +
+  theme(
+    strip.text = element_text(face = "bold", size = 11),
+    panel.grid.minor = element_blank(),
+    strip.background = element_rect(fill = "gray95"))
+  
+cor_plot
 ```
