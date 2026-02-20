@@ -26,7 +26,7 @@ df_limpo <- df |>
     codigo_municipio %in% c(230050, 230310, 230365, 230400, 230435, 230450, 230465, 230490, 230520, 230580, 230610, 230800, 230820, 230880, 230900, 230990, 231095, 231170, 231200, 231220, 231280, 231290, 231390, 231395)) |>
     select(nome, nome_do_municipio, codigo_municipio, populacao_muni, estabelecimento , nivel_atencao, codigo_estabelecimento_saude, codigo_profissional_saude, populacao_muni, cbo)
 
-df_analise <- df_limpo |> 
+df_analise <- df_limpo |>
     select(nome, nome_do_municipio, nivel_atencao, populacao_muni) |>  
     group_by(nome_do_municipio, nivel_atencao, populacao_muni) |> 
     summarise(total_vinculos = n(), .groups = "drop") |> 
