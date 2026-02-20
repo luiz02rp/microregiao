@@ -46,6 +46,9 @@ levene_test(df_t, pop_vinculo ~ nivel_atencao, center = "median") |>
 # Teste t com bootstrapp
 ```{r}
 # teste t com bootstrapp
+df_t |> 
+  filter(nivel_atencao == "atenção secundária")
+
 t_test_robusto <- boot.t.test(pop_vinculo ~ nivel_atencao, df_t, R = 1000)
 ```
 
@@ -58,7 +61,7 @@ efeito <- cohens_d(data = df_t, formula = pop_vinculo ~ nivel_atencao, var.equal
 ```
 
 # procedimento de análise de dados
-Foi realizado um teste t de Student para amostras independentes com o objetivo de investigar em que medida os níveis de saúde mental eram diferentes entre quem tinha e quem não tinha filhos. A normalidade dos dados foi avaliada por meio do teste Shapiro-Wilk. O pressuposto de homogeneidade de variância foi avaliado por meio do teste de Levene. Foram realizados procedimentos de bootstrapping (1000 re-amostragens; 95% IC) para se obter uma maior confiabilidade dos resultados, para corrigir desvios de normalidade da distribuição da amostra e diferenças entre os tamanhos dos grupos e, também, para apresentar um intervalo de confiança de 95% para as diferenças entre as médias (Haukoos & Lewis, 2005).
+Foi realizado um teste t de Student para amostras independentes com o objetivo de investigar em que medida a cobertura de psicólogos era diferente entre os níveis primária e secundário. A normalidade dos dados foi avaliada por meio do teste Shapiro-Wilk. O pressuposto de homogeneidade de variância foi avaliado por meio do teste de Levene. Foram realizados procedimentos de bootstrapping (1000 re-amostragens; 95% IC) para se obter uma maior confiabilidade dos resultados, para corrigir desvios de normalidade da distribuição da amostra, diferenças entre os tamanhos dos grupos e para apresentar um intervalo de confiança de 95% para as diferenças entre as médias (Haukoos & Lewis, 2005).
 
 # resultados
-Os resultados demonstraram que pessoas com filhos tiveram escore estatisticamente maior (*M* = 19,36; DP = 3,71) do que pessoas sem filhos (*M* = 18,27; *DP* = 3,96) (*t*(522) = 3,230, *p* = 0,002). Entretanto, o tamanho de efeito da diferença foi baixo (d de Cohen = 0,28).
+Os resultados indicaram desvio de normalidade para a cobertura de psicólogos na atenção secundária. Além disso, observou-se a existência de psicólogos atuando na atenção primária em todos os 24 municípios da microrregião, mas apenas 18 cidades contavam com a presença de tais profissionais no nível secundário (ver tabela x). Embora exista essa diferença, a relação entre  vínculo de psicólogos por habitantes não apresentou diferença significativa (*t*(25,37) = -1,44, *p* = 0,09) [IC 95% -8966,91, 636,87], com tamanho de efeito pequeno (d de Cohen = 0,48). 

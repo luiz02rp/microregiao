@@ -28,10 +28,10 @@ A normalidade dos dados não foi acatada pelo teste de Shapiro-Wilk para a vari�
 ## correlação de spearman
 ```{r}
 correlacao <- df_cor |> 
-  cor_test(vars = populacao_muni, vars2 = total_vinculos, alternative = "two.sided", method = "spearman")
+  cor_test(vars = populacao_muni, vars2 = total_vinculos, alternative = "two.sided", method = "kendall")
 ```
 
-Procedeu, assim, à realização do teste de correlação de Spearman, o qual indicou que há uma associação significativa e moderada (Rs (22) = 0,57; p < 0,01), o que sugere que a quantidade vínculos é maior onde há uma população mais numerosa. Entretanto, quando se analisou  apenas a quantidade de vínculos na atenção primária (Rs (22) = 0,28; p < 0,18) e secundária (Rs (16) = 0,33; p < 0,18) separadamente, observou-se que não existia associação significativa. 
+Por conta da quebra desse pressuposto e da existência de outiliers (Sobral), optou-se pela utilização do teste Tau de Kendall (Xu et al., 2013), o qual indicou que há uma associação significativa e moderada ($\tau = 0,44; n = 24;  p < 0,01), o que sugere que a quantidade vínculos é maior onde há uma população mais numerosa. Entretanto, quando se analisou  apenas a quantidade de vínculos na atenção primária ($\tau = 0,21; p < 0,17) e secundária ($\tau = 0,25; p < 0,18) separadamente, observou-se que não existia associação significativa. 
 
 # Correlação entre população e quantidade de vínculos na primária
 ## Testando pressupostos
@@ -43,7 +43,7 @@ df_cor_p |>
 ## correlação de spearman
 ```{r}
 df_cor_p |> 
-  cor_test(vars = populacao_muni, vars2 = total_vinculos, alternative = "two.sided", method = "spearman")
+  cor_test(vars = populacao_muni, vars2 = total_vinculos, alternative = "two.sided", method = "kendall")
 ```
 
 # Correlação entre população e quantidade de vínculos na secundária
@@ -57,14 +57,17 @@ df_cor_s |>
 ## correlação de spearman
 ```{r}
 df_cor_s |> 
-  cor_test(vars = populacao_muni, vars2 = total_vinculos, alternative = "two.sided", method = "spearman")
+  cor_test(vars = populacao_muni, vars2 = total_vinculos, alternative = "two.sided", method = "kendall")
 ```
+# Coleta e processamento de dados
+ Segmentou-se a análise entre a população dos municípios e o total de vínculos de psicólogos na rede geral e, esp nos três níveis assitenciais. Em seguida, optou-se filtrar apenas os casos da atenção primária (n = 24 municípios) e somente no nível secundário (n = 18). Optou-se por não filtrar pelo nível terciário pelo fato de que apenas dois municípios aresentaram vínculos de psicólogos (Sobral e Reriutaba). Em seguida, realizaram-se correlações utilizando o método de Tau de Kendall entre as referidas variáveis. A análise foi conduzida com o pacote rstatix (Kassambara, 2025).
 
 # Procedimento de análise de dados
-Foram realizadas correlações de Pearson entre as variáveis Crise Existencial, Felicidade, Sentido de Vida e Otimismo. A análise foi conduzida com o pacote psych (Revelle, 2024) no software R (R Core Team, 2023).
 
-# Resultados (esse foi eu quem fez)
-Os reusltados do teste de Shapiro-Wilk indicaram ausência de normalidade para as variáveis população municipal e total de vínculos de psicólogos em todas as situações analisadas. Além disso, o teste de correlação de Spearman mostrou que existe associação significativa, positiva e moderada entre o tamanho populacional e o número de vínculos de psicólogos (Rs = (22) = 0,57; p < 0,01) quando se observa a rede de modo agregado. Entretanto, esse relação não se sustenta quando os níveis de atenção são analisados do modo separado. A atenção primária apresentou uma correlação fraca e não significativa (Rs (22) = 0,28; p < 0,18), assim como a secundária (Rs (16) = 0,33; p < 0,18) (ver figura x). 
+As análises foram realizadas utilizando o software R (R Core Team, 2025). Foi usado o pacote tidyverse para importação, manipulação e visualização de dados. Também se utilizou rstatix para verificar o pressuposto de normalidade com o teste de Shapiro-Wilk e avaliar a correlação bivariada por meio do tau de Kendall. 
+
+# Resultados
+Os resultados do teste de Shapiro-Wilk indicaram ausência de normalidade para as variáveis população municipal e total de vínculos de psicólogos em todas as situações analisadas. Além disso, o teste de correlação de Spearman mostrou que existe associação significativa, positiva e moderada entre o tamanho populacional e o número de vínculos de psicólogos (Rs = (22) = 0,57; p < 0,01) quando se observa a rede de modo agregado. Entretanto, esse relação não se sustenta quando os níveis de atenção são analisados do modo separado. A atenção primária apresentou uma correlação fraca e não significativa (Rs (22) = 0,28; p < 0,18), assim como a secundária (Rs (16) = 0,33; p < 0,18) (ver figura x). 
 
 # Visualização
 

@@ -1,0 +1,30 @@
+---
+title: "Untitled"
+format: html
+---
+
+# Método
+## Coleta e processamento de dados
+## Amostra
+## Considerações éticas
+## Procedimento de análise de dados
+As análises foram realizadas utilizando o software R (R Core Team, 2025). Foi usado o pacote tidyverse para importação, manipulação e visualização de dados; o rstatix para verificar os pressupostos de normalidade (teste de Shapiro-Wilk) e homogeneidade de variância (teste de Levene), o tamanho de efeito e a correlação bivariada; o MKinfer para cumputar o teste t de Student com bootstrapping; ggpubr e o scales para aprimorar os gráficos das correlações. 
+
+O teste t de Student para amostras independentes objetivou investigar em que medida a cobertura de psicólogos era diferente entre os níveis primário e secundário. Foram realizados procedimentos de bootstrapping (1000 re-amostragens; 95% IC) para se obter uma maior confiabilidade dos resultados, para corrigir desvios de normalidade da distribuição da amostra, diferenças entre os tamanhos dos grupos e para apresentar um intervalo de confiança de 95% para as diferenças entre as médias (Haukoos & Lewis, 2005).
+
+Os teste de correlação avaliou em que medida o contingente populacional de dado município estava associado com o total de vínculos de psicólogos. Tal análise foi feita para os níveis primário e secundário agrupados e para a atenção primária e secundária separadamente, a fim de verificar se a associação existia e se tal padrão se mantém nesses níveis isoladamente. Optou-se por excluir a atenção terciária, na medida em que havia vínculos de psicólogos em apenas dois municípios (Sobral e Reriutaba). Para contornar a discordância com o pressuposto de normalidade, baixo tamanho amostral e a presença de um outileir (Sobral), decidiu-se utilizar o tau de Kendall por apresentar menor viés que o rho de Spearman e o coeficiente de Pearson nessas circuntâncias (Xu et al., 2013). 
+
+# Resultados
+
+Os resultados indicaram desvio de normalidade para a cobertura de psicólogos (vínculos por habitantes) apenas na atenção secundária (*W* =  0,78; *p*< 0,001). Além disso, observou-se a existência de psicólogos atuando na atenção primária em todos os 24 municípios, mas apenas 18 cidades contavam com a presença de tais profissionais no nível secundário (ver tabela 1). Embora exista essa diferença, a relação entre habitantes por vínculo de psicólogos  não apresentou diferença significativa (*t*(25,37) = -1,44, *p* = 0,09) [IC 95% -8966,91, 636,87], com tamanho de efeito pequeno (d de Cohen = 0,48).
+
+```{r}
+tabela_descritiva 
+```
+
+Também houve ausência de normalidade para as variáveis população municipal e total de vínculos de psicólogos tanto quando se agrupou atenção primária e secundária, quanto na situação em que foram analiadas isoladamente. Além disso, o teste de correlação tau de Kendall mostrou que existe associação significativa, positiva e moderada entre o tamanho populacional e o número de vínculos de psicólogos ($\tau$ = 0,44; p < 0,01) quando se observa a rede de modo agregado. Entretanto, esse relação não se sustenta quando os níveis de assistenciais são analisados do modo separado. A atenção primária apresentou uma correlação fraca e não significativa ($\tau$ = 0,21; p < 0,21), assim como a secundária ($\tau$ = 0,25; p < 0,18) (ver figura 1).
+
+```{r}
+cor_plot
+```
+# Referências
