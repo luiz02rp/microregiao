@@ -1,7 +1,103 @@
 ---
 title: "Untitled"
 format: html
+editor_options: 
+  chunk_output_type: console
 ---
+```{r}
+#| echo: false
+#| warning: false
+library(tidyverse)
+library(rstatix)
+library(flextable)
+library(MKinfer)
+library(gtsummary)
+library(ggpubr)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+
+df <- read_csv("data/dados-limpo.csv")
+
+df_limpo <- df |> 
+    filter(nivel_atencao %in% c("atenção primária", "atenção secundária", "atenção terciária"),
+    codigo_municipio %in% c(230050, 230310, 230365, 230400, 230435, 230450, 230465, 230490, 230520, 230580, 230610, 230800, 230820, 230880, 230900, 230990, 231095, 231170, 231200, 231220, 231280, 231290, 231390, 231395)) |>
+    select(nome, nome_do_municipio, codigo_municipio, populacao_muni, estabelecimento , nivel_atencao, codigo_estabelecimento_saude, codigo_profissional_saude, populacao_muni, cbo)
+
+df_analise <- df_limpo |> 
+    select(nome, nome_do_municipio, nivel_atencao, populacao_muni) |>  
+    group_by(nome_do_municipio, nivel_atencao, populacao_muni) |> 
+    summarise(total_vinculos = n(), .groups = "drop") |> 
+    mutate(pop_vinculo = populacao_muni / total_vinculos,
+    nivel_atencao = as_factor(nivel_atencao)) 
+
+# quantidade de psicólogos por nível de atenção
+df_limpo |> 
+  count(nivel_atencao)
+
+# quantidade de municípios
+df_limpo |> 
+  count(nome_do_municipio)
+
+# códigos de profissionais repetidos
+codigos_repetidos <- df_limpo |> 
+  group_by(codigo_profissional_saude) |> 
+  summarise(qde_vinculos = n()) |> 
+  filter(qde_vinculos > 1) |> 
+  arrange(desc(qde_vinculos)) |> 
+  pull(codigo_profissional_saude) 
+
+# detalhes dos profissionais repetidos
+profissionais_repetidos <- df_limpo |> 
+  filter(codigo_profissional_saude %in% c(codigos_repetidos)) |>  
+  select(nome, nome_do_municipio, nivel_atencao, codigo_profissional_saude) |> 
+  arrange(codigo_profissional_saude)
+
+profissionais_repetidos |> 
+  group_by(nivel_atencao) |> 
+  summarise(n = n())
+
+# banco para teste t
+df_t <- df_analise |> 
+    filter(nivel_atencao %in% c("atenção primária", "atenção secundária"))
+
+# banco para correlação
+## correlação população e quantidade de vínculos de psicólogos
+df_cor <- df_analise |> 
+  select(nome_do_municipio, populacao_muni, total_vinculos) |> 
+  group_by(nome_do_municipio, populacao_muni) |> 
+  summarise(total_vinculos = sum(total_vinculos, na.rm = T), .groups = "drop")
+
+
+## correlação população e quantidade de vínculos de psicólogos na atenção primária
+df_cor_p <- df_analise |> 
+    filter(nivel_atencao == "atenção primária") |> 
+    select(populacao_muni, total_vinculos) 
+    
+## correlação população e quantidade de vínculos de psicólogos na atenção secundária
+df_cor_s <- df_analise |>
+    filter(nivel_atencao == "atenção secundária") |> 
+    select(populacao_muni, total_vinculos) 
+
+# adicionar variável igual em todos os bancos
+df_geral <- df_cor |> 
+  mutate(categoria = "Rede geral")
+
+df_primaria <- df_cor_p |> 
+  mutate(categoria = "Atenção primária")
+
+df_secundaria <- df_cor_s |> 
+  mutate(categoria = "Atenção secundária")
+
+# juntar banco de dados
+df_plot <- bind_rows(df_geral, df_primaria, df_secundaria)
+
+df_plot <- df_plot |> 
+  mutate(categoria = factor(categoria, levels = c("Rede geral", "Atenção primária", "Atenção secundária")))
+    
+```
 
 # Método
 ## Coleta e processamento de dados
@@ -19,12 +115,43 @@ Os teste de correlação avaliou em que medida o contingente populacional de dad
 Os resultados indicaram desvio de normalidade para a cobertura de psicólogos (vínculos por habitantes) apenas na atenção secundária (*W* =  0,78; *p*< 0,001). Além disso, observou-se a existência de psicólogos atuando na atenção primária em todos os 24 municípios, mas apenas 18 cidades contavam com a presença de tais profissionais no nível secundário (ver tabela 1). Embora exista essa diferença, a relação entre habitantes por vínculo de psicólogos  não apresentou diferença significativa (*t*(25,37) = -1,44, *p* = 0,09) [IC 95% -8966,91, 636,87], com tamanho de efeito pequeno (d de Cohen = 0,48).
 
 ```{r}
-tabela_descritiva 
+#| echo: false
+#| warning: false
+tabela_descritiva <- df_t |> 
+  group_by(nivel_atencao) |> 
+  summarise(n = n(), media = mean(pop_vinculo, na.rm = T), desvio_padrao = sd(pop_vinculo, na.rm = T)) |> 
+  flextable() |> 
+  set_header_labels(nivel_atencao = "Nível assistencial", n = "Nº de municípios", media = "Média", desvio_padrao = "Desvio-Padrão") |> 
+  colformat_double(digits = 2, big.mark = ".", decimal.mark = ",") |> 
+  autofit() |> 
+  set_caption("Habitantes por Psicólogo por Nível de Atenção")
+tabela_descritiva
 ```
 
 Também houve ausência de normalidade para as variáveis população municipal e total de vínculos de psicólogos tanto quando se agrupou atenção primária e secundária, quanto na situação em que foram analiadas isoladamente. Além disso, o teste de correlação tau de Kendall mostrou que existe associação significativa, positiva e moderada entre o tamanho populacional e o número de vínculos de psicólogos ($\tau$ = 0,44; p < 0,01) quando se observa a rede de modo agregado. Entretanto, esse relação não se sustenta quando os níveis de assistenciais são analisados do modo separado. A atenção primária apresentou uma correlação fraca e não significativa ($\tau$ = 0,21; p < 0,21), assim como a secundária ($\tau$ = 0,25; p < 0,18) (ver figura 1).
 
 ```{r}
+#| echo: false
+#| warning: false
+cor_plot <- df_plot |>
+  ggplot(aes(x = populacao_muni, y = total_vinculos)) +
+  geom_point(color = "black", alpha = 0.7, size = 2) +
+  geom_smooth(method = "lm", color = "black", se = F) +
+  facet_wrap(~categoria, scales = "fixed") +
+  scale_y_log10(breaks = c(1, 2, 5, 10, 20, 50)) +
+  scale_x_log10(breaks = c(5000, 10000, 25000, 50000, 100000, 250000))+
+  labs(
+    title = "Relação entre População e Vínculos de Psicólogos",
+    subtitle = "Região de Saúde 11 - Ceará",
+    x = "População do município",
+    y = "Número de vínculos" 
+  ) +
+  theme_bw() +
+  theme(
+    strip.text = element_text(face = "bold", size = 11),
+    panel.grid.minor = element_blank(),
+    strip.background = element_rect(fill = "gray95"))
+  
 cor_plot
 ```
 # Referências
