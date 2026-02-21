@@ -316,3 +316,5 @@ Instituto Brasileiro de Geografia e Estatística. (2025). Estimativas de popula�
 Ministério da Saúde. (2025). Cadastro Nacional de Estabelecimentos de Saúde (CNES): Bases de dados. Recuperado em [insira o dia e mês da coleta], 2025, de https://cnes.datasus.gov.br/pages/downloads/arquivosBaseDados.jsp
 
 Ministério da Saúde. (2017, 28 de setembro). Portaria de consolidação nº 3, de 28 de setembro de 2017. Consolidação das normas sobre as redes do Sistema Único de Saúde. Biblioteca Virtual em Saúde do Ministério da Saúde. https://bvsms.saude.gov.br/bvs/saudelegis/gm/2017/prt0003_28_09_2017.html
+
+Xu, W., Hou, Y., Hung, Y. S., & Zou, Y. (2013). A comparative analysis of Spearman’s rho and Kendall’s tau in normal and contaminated normal models. Signal Processing, 93(1), 261–276. https://doi.org/10.1016/j.sigpro.2012.08.005
