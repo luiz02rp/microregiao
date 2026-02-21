@@ -117,8 +117,17 @@ Assim, o banco de dados final permitiu visualizar o total de vínculos por níve
 
 ## Amostra
 ### Dados sociodemográficos (a fazer)
+```{r}
+#| echo: false
+#| warning: false
+df_muni_pop <- df_limpo |> 
+  group_by(nome_do_municipio) |> 
+  summarise(populacao = first(populacao_muni))
 
-A 11º região de saúde do Ceará totaliza 658.665 mil em termos populacionais o que representa 7,133% da população do Ceará (9.233.656 milhões), mas 39,2% da população da macrorregião norte (1.679.525 milhões) (IBGE, 2025). Trata-se, portanto, de quase 40% da população total da macrorregião de saúde. 
+muni_pop <- sum(df_muni_pop$populacao)
+```
+
+A 11º região de saúde do Ceará totaliza `r format(muni_pop, big.mark = ".", decimal.mark = ",")` mil habitantes o que representa 7,133% (*rever a partir desse número*) da população do Ceará (9.233.656 milhões), mas 39,2% da população da macrorregião norte (1.679.525 milhões) (IBGE, 2025). Trata-se, portanto, de quase 40% da população total da macrorregião de saúde. 
 Há um total de 466 equipamentos registrados. Os estabelecimentos de gestão ou apoio técnico e/ou legal foram ignorados. A distribuição entre os níveis de atenção se dá da seguinte maneira:
 
 Quanto à distribuição por município, observa-se uma predominância em Sobral, que concentra 79 deles. Tal número representa 16,31% do total. Quando comparado com Ipu (29 dispositivos), há uma diferença expressiva de 50. Entretanto, não se vê uma discrepância desse nível entre Ipu e Santa Quitéria, que é a terceira cidade com maior quantidade desses estabelecimentos (24). Juntas, essas duas cidades representam 11,37% dos estabelecimentos (CNES, 2025).
