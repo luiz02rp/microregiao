@@ -13,6 +13,7 @@ library(flextable)
 library(MKinfer)
 library(gtsummary)
 library(ggpubr)
+library(janitor)
 ```
 
 ```{r}
@@ -116,24 +117,141 @@ A fim de analisar a distribuição de psicólogos na referida região, foi adici
 Assim, o banco de dados final permitiu visualizar o total de vínculos por nível de atenção para cada município, bem como a sua cobertura assistencial nos três níveis. 
 
 ## Amostra
-### Dados sociodemográficos (a fazer)
+### Características demográficas e distribuição dos equipamentos
 ```{r}
 #| echo: false
 #| warning: false
+
+# população da 11º região
 df_muni_pop <- df_limpo |> 
   group_by(nome_do_municipio) |> 
   summarise(populacao = first(populacao_muni))
 
 muni_pop <- sum(df_muni_pop$populacao)
+
+# população do Ceará
+df_ce_pop <- df |> 
+  filter(estado == "CE") |> 
+  group_by(nome_do_municipio) |> 
+  select(nome_do_municipio, populacao_muni) |> 
+  summarise(populacao = first(populacao_muni))
+
+ce_pop <- sum(df_ce_pop$populacao)
+
+# razão entre população dos municípios da microsobral e ceará
+rz_muni_ce <- round((muni_pop / ce_pop) * 100, digits = 2)
+
+# população da marcorregião norte
+df_macro_norte_pop <- df_ce_pop |> 
+  filter(nome_do_municipio %in% c(
+  # SOBRAL
+  "Sobral", "Alcântaras", "Cariré", "Catunda", "Coreaú", "Forquilha", 
+  "Frecheirinha", "Graça", "Groaíras", "Hidrolândia", "Irauçuba", 
+  "Massapê", "Meruoca", "Moraújo", "Mucambo", "Pacujá", "Pires Ferreira", 
+  "Reriutaba", "Santa Quitéria", "Santana do Acaraú", "Senador Sá", "Varjota", "Ipu","Uruoca",
+
+  # ACARAÚ
+  "Acaraú", "Bela Cruz", "Cruz", "Itarema", "Marco", "Morrinhos", "Jijoca de Jericoacoara",
+
+  # TIANGUÁ
+  "Tianguá", "Carnaubal", "Croatá", "Guaraciaba do Norte", "Ibiapina", 
+  "São Benedito", "Ubajara", "Viçosa do Ceará",
+
+  # CRATEÚS
+  "Ararendá", "Crateús", "Independência", "Ipaporanga", "Ipueiras", 
+  "Monsenhor Tabosa", "Nova Russas", "Novo Oriente", "Poranga", 
+  "Quiterianópolis", "Tamboril",
+
+  # CAMOCIM
+  "Camocim", "Barroquinha", "Chaval", "Granja", "Martinópole"))
+
+macro_norte_pop <- sum(df_macro_norte_pop$populacao)
+
+# razão entre população dos municípios da microsobral e macrorregião norte
+rz_muni_macro <- round((muni_pop / macro_norte_pop) * 100, digits = 2)
 ```
 
-A 11º região de saúde do Ceará totaliza `r format(muni_pop, big.mark = ".", decimal.mark = ",")` mil habitantes o que representa 7,133% (*rever a partir desse número*) da população do Ceará (9.233.656 milhões), mas 39,2% da população da macrorregião norte (1.679.525 milhões) (IBGE, 2025). Trata-se, portanto, de quase 40% da população total da macrorregião de saúde. 
-Há um total de 466 equipamentos registrados. Os estabelecimentos de gestão ou apoio técnico e/ou legal foram ignorados. A distribuição entre os níveis de atenção se dá da seguinte maneira:
+```{r}
+#| echo: false
+#| warning: false
 
-Quanto à distribuição por município, observa-se uma predominância em Sobral, que concentra 79 deles. Tal número representa 16,31% do total. Quando comparado com Ipu (29 dispositivos), há uma diferença expressiva de 50. Entretanto, não se vê uma discrepância desse nível entre Ipu e Santa Quitéria, que é a terceira cidade com maior quantidade desses estabelecimentos (24). Juntas, essas duas cidades representam 11,37% dos estabelecimentos (CNES, 2025).
+estab <- df_limpo |> 
+  select(estabelecimento, nivel_atencao) |> 
+  group_by(estabelecimento, nivel_atencao) |> 
+  summarise(total = n(), .groups = "drop") |> 
+  arrange(nivel_atencao, desc(total))
 
-### Psicólogos e níveis assistenciais (a fazer)
-Quanto ao total de psicólogos, foram contabilizados 154 cadastrados nos estabelecimentos da microrregião de saúde de Sobral. Destes, 71 (46,10%) atuam na atenção primária, 72 (46,75%) na secundária e 11 (7,14%) na terciária. Logo, foram encontrados psicólogos atuando em todos os níveis de atenção. O único município com atenção terciária e, consequentemente, psicólogos nesse nível, foi Sobral. Dentre os 24 municípios, encontrou-se que 10 (41,6%) têm concentração de psicólogos na atenção primária; 9 (37,5%) apresentam predominância na atenção secundária; 4 (16,6%) não possuem diferença entre os dois níveis (desconsidera-se a atenção terciária, que não era presente nesses municípios); e 1 (4,16%) não possui nenhum psicólogo.
+total_estab <- sum(estab$total)
+
+total_estab_prim <- estab |> 
+  filter(estabelecimento %in% c("CENTRO DE SAUDE/UNIDADE BASICA", "POSTO DE SAUDE", "CENTRO DE APOIO A SAUDE DA FAMILIA")) |> 
+  pull(total) |> 
+  sum()
+```
+
+A 11º região de saúde do Ceará totaliza `r format(muni_pop, big.mark = ".", decimal.mark = ",")` mil habitantes o que representa `r format(rz_muni_macro, big.mark = ".", decimal.mark = ",")`% da população da Superintendência Regional de Saúde Norte (`r format(macro_norte_pop, big.mark = ".", decimal.mark = ",")` milhões) e `r format(rz_muni_ce, big.mark = ".", decimal.mark = ",")`% da população do Ceará (`r format(ce_pop, big.mark = ".", decimal.mark = ",")` milhões) e (IBGE, 2025). Foram identificados `r total_estab` estabelecimentos, sendo a maior parte pertencente à atenção primária (`r total_estab_prim`) e localizados no município de Sobral (ver tabela 1).
+
+```{r}
+#| echo: false
+#| warning: false
+
+tabela_estab <- df_limpo |> 
+  select(nome_do_municipio, estabelecimento, nivel_atencao) |>
+  group_by(nome_do_municipio, estabelecimento, nivel_atencao) |> 
+  summarise(total_estabelecimento = n(), .groups = "drop") |>
+  mutate(estabelecimento = str_to_sentence(estabelecimento),
+         nivel_atencao = str_to_sentence(nivel_atencao)) |> 
+  flextable() |> 
+  flextable::font(fontname = "Times New Roman", part = "all") |> 
+  fontsize(size = 12, part = "all") |> 
+  set_header_labels(nome_do_municipio = "Município",
+                    estabelecimento = "Tipo de estabelecimento",
+                    nivel_atencao = "Nível assistencial",
+                    total_estabelecimento = "Total") |> 
+  autofit() |> 
+  set_caption("Distribuição dos estabelecimentos de saúde na 11º região de saúde")
+  
+tabela_estab
+```
+
+### Psicólogos e níveis assistenciais
+
+Quanto ao total de psicólogos, foram contabilizados 171 vínculos cadastrados nos estabelecimentos. Destes, 96 atuam na atenção primária, 63 na secundária e 12 na terciária. Logo, foram encontrados psicólogos atuando em todos os níveis de atenção. Os únicos municípios com psicólogos na atenção terciária foram Sobral (11) e Reriutaba (1). Dentre os 24 municípios, 12 tem o seu maior quantitativo de vínculos na atenção primária; 7 apresentam predominância na atenção secundária;e 5 não possuem diferença entre os dois níveis. Não houve maior contingente no nível terciário em nenhum dos municípios. Para mais detalhes, consultar tabela 2.
+
+```{r}
+#| echo: false
+#| warning: false
+df_tabela <- df_analise |>  
+    select(nome_do_municipio, nivel_atencao, total_vinculos) |> 
+    arrange(desc(total_vinculos)) |> 
+    pivot_wider(names_from = nivel_atencao, 
+    values_from = total_vinculos,
+    values_fill = 0) |> 
+    clean_names() |> 
+    mutate(vinculos_municipio = rowSums(across(starts_with("atencao_")), na.rm = T),
+    porcentagem = vinculos_municipio / sum(vinculos_municipio))|> 
+    as_data_frame() |> 
+    relocate(atencao_primaria, .after = nome_do_municipio)
+
+tabela_psi <- df_tabela |> 
+    adorn_totals("row", name = "Total") |> 
+    flextable() |> 
+    autofit() |> 
+    colformat_double(j = "porcentagem", 
+    digits = 0, suffix = "%") |>
+    set_formatter(porcentagem = function(x) sprintf("%.0f%%", x * 100)) |> 
+  set_header_labels(nome_do_municipio = "Município",
+                    atencao_primaria = "Atenção primária",
+                    atencao_secundaria = "Atenção secundária",
+                    atencao_terciaria = "Atenção terciária",
+                    vinculos_municipio = "Vínculos",
+                    porcentagem = "Porcentagem") |> 
+  flextable::font(fontname = "Times New Romen", part = "all") |> 
+  fontsize(size = 12, part = "all") |> 
+    set_caption("Distribuição dos vínculos de psicólogos na 11º região de saúde ")
+
+tabela_psi
+```
 
 ## Procedimento de análise de dados
 As análises também foram realizadas utilizando o software R (R Core Team, 2025). Foi usado o pacote tidyverse para importação, manipulação e visualização de dados; o rstatix para verificar os pressupostos de normalidade (teste de Shapiro-Wilk) e homogeneidade de variância (teste de Levene), o tamanho de efeito e a correlação bivariada; o MKinfer para cumputar o teste t de Student com bootstrapping; ggpubr e o scales para aprimorar os gráficos das correlações. 
