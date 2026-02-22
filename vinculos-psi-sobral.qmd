@@ -54,13 +54,32 @@ codigos_repetidos <- df_limpo |>
 # detalhes dos profissionais repetidos
 profissionais_repetidos <- df_limpo |> 
   filter(codigo_profissional_saude %in% c(codigos_repetidos)) |>  
-  select(nome, nome_do_municipio, nivel_atencao, codigo_profissional_saude) |> 
+  select(nome, nome_do_municipio, nivel_atencao, codigo_profissional_saude, codigo_estabelecimento_saude) |> 
   arrange(codigo_profissional_saude)
+
+profissionais_repetidos |> 
+  select(nome, nivel_atencao, codigo_profissional_saude, codigo_estabelecimento_saude) 
 
 profissionais_repetidos |> 
   group_by(nivel_atencao) |> 
   summarise(n = n())
 
+profissionais_repetidos |> 
+  group_by(nome, codigo_profissional_saude) |> 
+  summarise(vinculos = n(), .groups = "drop") |> 
+  arrange(desc(vinculos)) |> 
+  print(n = Inf)
+
+profissionais_repetidos |> 
+  count(nome) |> 
+  arrange(desc(n))
+
+profissionais_repetidos |>  
+  group_by(nome, nivel_atencao) |> 
+  summarise(vinculos = n(), .groups = "drop") |> 
+  arrange(desc(vinculos)) |> 
+  filter(nivel_atencao == "atenção secundária") |> 
+  print(n = Inf)
 ```
 
 Encontrou-se 171 vínculos de psicólogos nos 24 municípios da 11º região de saúde. O nível primário, secundário e terciário contaram com, respectivamente, 96, 63 e 12 vínculos de psicólogos. A quantidade de vínculos repetidos foram 44, dos quais 32, 11 e 1 pertenciam, repectivamente, ao nível primário, secundário e terciário. 
