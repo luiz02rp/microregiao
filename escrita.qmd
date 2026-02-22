@@ -253,6 +253,10 @@ tabela_psi <- df_tabela |>
 tabela_psi
 ```
 
+Dos 171 registros de psicólogos, observou-se que havia um grupo de 21 profissionais com mais de um vínculo. A maioria (19) possuía dois registros, enquanto dois psicólogos apresentavam três vínculos ativos. Dos 21, 13 profissionais atuavam exclusivamente no nível primário (12 com dois vínculos e um com três). Quanto à atenção secundária, três profissionais mantinham dois vínculos cada. A análise de integração entre níveis revelou que três profissionais atuavam de forma híbrida entre as atenções primária e secundária (um vínculo em cada), enquanto um transitava entre a secundária e a terciária. Por fim, identificou-se um profissional com atuação mista, com dois vínculos na primária e um na secundária. 
+
+Ainda assim, para a análise da rede assistencial, optou-se pela manutenção da totalidade dos vínculos. Tal decisão justifica-se pelo fato este estudo procurou investigar a ferta de psicólogos nos serviços em cada ponto da rede. Excluir vínculos sobrepostos (profissionais com acúmulo de cargos) resultaria em uma subestimação da cobertura assistencial em determinados níveis e uma superestimação em outros, uma vez que um único profissional pode desempenhar funções distintas e essenciais em diferentes estabelecimentos ou níveis de complexidade (primária, secundária ou terciária) (Constituição da República Federativa do Brasil, 1988, Art. 37, XVI). Assim, cada registro foi tratado como um posto de trabalho ativo e, assim, refletir a disponibilidade real de atendimento à população em cada serviço de saúde.
+
 ## Procedimento de análise de dados
 As análises também foram realizadas utilizando o software R (R Core Team, 2025). Foi usado o pacote tidyverse para importação, manipulação e visualização de dados; o rstatix para verificar os pressupostos de normalidade (teste de Shapiro-Wilk) e homogeneidade de variância (teste de Levene), o tamanho de efeito e a correlação bivariada; o MKinfer para cumputar o teste t de Student com bootstrapping; ggpubr e o scales para aprimorar os gráficos das correlações. 
 
@@ -308,6 +312,8 @@ cor_plot <- df_plot |>
 cor_plot
 ```
 # Referências
+
+Brasil. (1988). Constituição da República Federativa do Brasil. Presidência da República. http://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm
 
 Conselho Nacional de Saúde. (2016). Resolução nº 510, de 7 de abril de 2016. Dispõe sobre as normas aplicáveis a pesquisas em Ciências Humanas e Sociais. http://conselho.saude.gov.br/resolucoes/2016/Reso510.pdf
 
