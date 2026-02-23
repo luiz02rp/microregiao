@@ -34,14 +34,6 @@ df_analise <- df_limpo |>
     mutate(pop_vinculo = populacao_muni / total_vinculos,
     nivel_atencao = as_factor(nivel_atencao)) 
 
-# quantidade de psicólogos por nível de atenção
-df_limpo |> 
-  count(nivel_atencao)
-
-# quantidade de municípios
-df_limpo |> 
-  count(nome_do_municipio)
-
 # códigos de profissionais repetidos
 codigos_repetidos <- df_limpo |> 
   group_by(codigo_profissional_saude) |> 
@@ -55,10 +47,6 @@ profissionais_repetidos <- df_limpo |>
   filter(codigo_profissional_saude %in% c(codigos_repetidos)) |>  
   select(nome, nome_do_municipio, nivel_atencao, codigo_profissional_saude) |> 
   arrange(codigo_profissional_saude)
-
-profissionais_repetidos |> 
-  group_by(nivel_atencao) |> 
-  summarise(n = n())
 
 # banco para teste t
 df_t <- df_analise |> 
