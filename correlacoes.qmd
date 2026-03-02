@@ -27,7 +27,7 @@ df_cor |>
 
 A normalidade dos dados não foi acatada pelo teste de Shapiro-Wilk para a variável população (w=0,419; p < 0,001) nem para o total de vínculos no município (w=0,417; p < 0,001). 
 
-## correlação de spearman
+## correlação de Kendall
 ```{r}
 correlacao <- df_cor |> 
   cor_test(vars = populacao_muni, vars2 = total_vinculos, alternative = "two.sided", method = "kendall")
@@ -113,3 +113,9 @@ cor_plot <- df_plot |>
   
 cor_plot
 ```
+
+# correlação entre 
+```{r}
+
+```
+
