@@ -1,6 +1,6 @@
 ---
 title: "Distribuição dos psicólogos nos níveis assistenciais na 11º região de saúde do Ceará"
-format: html
+format: docx
 editor_options: 
   chunk_output_type: console
 ---
@@ -170,30 +170,43 @@ estab <- df_limpo |>
   summarise(total = n(), .groups = "drop") |> 
   arrange(nivel_atencao, desc(total))
 
-total_estab <- sum(estab$total)
+# total de estabelecimentos
+total_estab <- n_distinct(df_limpo$codigo_estabelecimento_saude)
 
-total_estab_prim <- estab |> 
-  filter(estabelecimento %in% c("CENTRO DE SAUDE/UNIDADE BASICA", "POSTO DE SAUDE", "CENTRO DE APOIO A SAUDE DA FAMILIA")) |> 
-  pull(total) |> 
-  sum()
-
-estab_sobral <- df_limpo |> 
-  count(nome_do_municipio, estabelecimento) |> 
-  filter(nome_do_municipio == "Sobral") |> 
-  pull(n) |> 
-  sum()
+# total de estabelecimentos na atenção primária
+total_estab_pri <- df_limpo |> 
+  filter(nivel_atencao == "atenção primária") |> 
+  summarise(n = n_distinct(codigo_estabelecimento_saude)) |> 
+  pull(n)
+# total de estabelecimentos na atenção secundária
+total_estab_sec <- df_limpo |> 
+  filter(nivel_atencao == "atenção secundária") |> 
+  summarise(n = n_distinct(codigo_estabelecimento_saude)) |> 
+  pull(n)
+# total de estabelecimentos na atenção terciária
+total_estab_ter <- df_limpo |> 
+  filter(nivel_atencao == "atenção terciária") |> 
+  summarise(n = n_distinct(codigo_estabelecimento_saude)) |> 
+  pull(n)
+# Estabelecimentos nos municípios
+total_estab_muni <- df_limpo |> 
+  group_by(nome_do_municipio) |> 
+  summarise(n = n_distinct(codigo_estabelecimento_saude)) |> 
+  arrange(desc(n)) 
 ```
 
-A 11º região de saúde do Ceará totaliza `r format(muni_pop, big.mark = ".", decimal.mark = ",")` mil habitantes o que representa `r format(rz_muni_macro, big.mark = ".", decimal.mark = ",")`% da população da Superintendência Regional de Saúde Norte (`r format(macro_norte_pop, big.mark = ".", decimal.mark = ",")` milhões) e `r format(rz_muni_ce, big.mark = ".", decimal.mark = ",")`% da população do Ceará (`r format(ce_pop, big.mark = ".", decimal.mark = ",")` milhões) e (IBGE, 2025). Foram identificados `r total_estab` estabelecimentos, sendo a maior parte pertencente à atenção primária (`r total_estab_prim`) e localizados no município de Sobral (ver tabela 1).
+A 11º região de saúde do Ceará totaliza `r format(muni_pop, big.mark = ".", decimal.mark = ",")` mil habitantes o que representa `r format(rz_muni_macro, big.mark = ".", decimal.mark = ",")`% da população da Superintendência Regional de Saúde Norte (`r format(macro_norte_pop, big.mark = ".", decimal.mark = ",")` milhões) e `r format(rz_muni_ce, big.mark = ".", decimal.mark = ",")`% da população do Ceará (`r format(ce_pop, big.mark = ".", decimal.mark = ",")` milhões) e (IBGE, 2025). Foram identificados `r total_estab` estabelecimentos, sendo a maior parte pertencente à atenção primária (`r total_estab_pri`) e localizados no município de Sobral (ver tabela 1).
 
 ```{r}
 #| echo: false
 #| warning: false
 
+# tabela com estabelecimentos na ADS sobral
 tabela_estab <- df_limpo |> 
-  select(nome_do_municipio, estabelecimento, nivel_atencao) |>
   group_by(nome_do_municipio, estabelecimento, nivel_atencao) |> 
-  summarise(total_estabelecimento = n(), .groups = "drop") |>
+  summarise(unidades_fisicas = n_distinct(codigo_estabelecimento_saude),
+            total_vinculos = n (),
+            .groups = "drop") |>
   mutate(estabelecimento = str_to_sentence(estabelecimento),
          nivel_atencao = str_to_sentence(nivel_atencao)) |> 
   flextable() |> 
@@ -202,9 +215,10 @@ tabela_estab <- df_limpo |>
   set_header_labels(nome_do_municipio = "Município",
                     estabelecimento = "Tipo de estabelecimento",
                     nivel_atencao = "Nível assistencial",
-                    total_estabelecimento = "Total") |> 
+                    unidades_fisicas = "Número de estabelecimentos",
+                    total_vinculos = "Número de vínculos") |> 
   autofit() |> 
-  set_caption("Distribuição dos estabelecimentos de saúde na 11º região de saúde")
+  set_caption("Distribuição dos estabelecimentos de saúde na ADS de Sobral")
   
 tabela_estab
 ```
@@ -246,6 +260,11 @@ tabela_psi <- df_tabela |>
     set_caption("Distribuição dos vínculos de psicólogos na 11º região de saúde ")
 
 tabela_psi
+```
+
+```{r}
+df_limpo |> 
+  count(nivel_atencao)
 ```
 
 Dos 171 registros de psicólogos, observou-se que havia um grupo de 21 profissionais com mais de um vínculo. A maioria (19) possuía dois registros, enquanto dois psicólogos apresentavam três vínculos ativos. Dos 21, 13 profissionais atuavam exclusivamente no nível primário (12 com dois vínculos e um com três). Quanto à atenção secundária, três profissionais mantinham dois vínculos cada. A análise de integração entre níveis revelou que três profissionais atuavam de forma híbrida entre as atenções primária e secundária (um vínculo em cada), enquanto um transitava entre a secundária e a terciária. Por fim, identificou-se um profissional com atuação mista, com dois vínculos na primária e um na secundária. 
