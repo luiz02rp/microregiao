@@ -176,6 +176,12 @@ total_estab_prim <- estab |>
   filter(estabelecimento %in% c("CENTRO DE SAUDE/UNIDADE BASICA", "POSTO DE SAUDE", "CENTRO DE APOIO A SAUDE DA FAMILIA")) |> 
   pull(total) |> 
   sum()
+
+estab_sobral <- df_limpo |> 
+  count(nome_do_municipio, estabelecimento) |> 
+  filter(nome_do_municipio == "Sobral") |> 
+  pull(n) |> 
+  sum()
 ```
 
 A 11º região de saúde do Ceará totaliza `r format(muni_pop, big.mark = ".", decimal.mark = ",")` mil habitantes o que representa `r format(rz_muni_macro, big.mark = ".", decimal.mark = ",")`% da população da Superintendência Regional de Saúde Norte (`r format(macro_norte_pop, big.mark = ".", decimal.mark = ",")` milhões) e `r format(rz_muni_ce, big.mark = ".", decimal.mark = ",")`% da população do Ceará (`r format(ce_pop, big.mark = ".", decimal.mark = ",")` milhões) e (IBGE, 2025). Foram identificados `r total_estab` estabelecimentos, sendo a maior parte pertencente à atenção primária (`r total_estab_prim`) e localizados no município de Sobral (ver tabela 1).
