@@ -14,6 +14,7 @@ library(MKinfer)
 library(gtsummary)
 library(ggpubr)
 library(janitor)
+library(scales)
 ```
 
 ```{r}
@@ -280,22 +281,26 @@ Também houve ausência de normalidade para as variáveis população municipal 
 #| warning: false
 cor_plot <- df_plot |>
   ggplot(aes(x = populacao_muni, y = total_vinculos)) +
-  geom_point(color = "black", alpha = 0.7, size = 2) +
-  geom_smooth(method = "lm", color = "black", se = F) +
+  geom_point(color = "black", alpha = 0.6, size = 2) +
+  geom_smooth(method = "lm", color = "black", se = F, linewidth = 1.1, n = 1000) +
   facet_wrap(~categoria, scales = "fixed") +
   scale_y_log10(breaks = c(1, 2, 5, 10, 20, 50)) +
-  scale_x_log10(breaks = c(5000, 10000, 25000, 50000, 100000, 250000))+
+  scale_x_log10(breaks = c(10000, 25000, 50000, 100000, 250000), 
+                labels = label_number(big.mark = ".", decimal.mark = ","))+
   labs(
     title = "Relação entre População e Vínculos de Psicólogos",
     subtitle = "Região de Saúde 11 - Ceará",
     x = "População do município",
     y = "Número de vínculos" 
   ) +
-  theme_bw() +
+  theme_bw(base_size = 12) +
   theme(
     strip.text = element_text(face = "bold", size = 11),
     panel.grid.minor = element_blank(),
-    strip.background = element_rect(fill = "gray95"))
+    strip.background = element_rect(fill = "gray95"),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+
   
 cor_plot
 ```
