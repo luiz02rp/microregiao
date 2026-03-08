@@ -85,7 +85,7 @@ df_limpo |>
   select(nome, nivel_atencao, estabelecimento) |> 
   filter(nivel_atencao == "atenção terciária")
 
-# número de estabelecimentos 
+# número de estabelecimentos  
 df_limpo |> 
   group_by(nivel_atencao) |> 
   summarise(total_estab = n_distinct(codigo_estabelecimento_saude)) |> 
